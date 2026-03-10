@@ -1,4 +1,4 @@
-$Report = "../reports/windows-report.text"
+$Report = "../reports/windows-report.txt"
 
 Write-Host "Starting Windows Security Audit..."
 Write-Host "The report will be saved to $Report"
@@ -10,7 +10,7 @@ $User = "$env:USERDOMAIN\$env:USERNAME"
 $OS = (Get-CimInstance Win32_OperatingSystem).Caption
 
 Write-Host "[2/5] Collecting IP addresses"
-$IPInfo = Get-NetIPAddresses | Where-Object { $_.AddressFamily -eq "IPv4 }
+$IPInfo = Get-NetIPAddress | Where-Object { $_.AddressFamily -eq "IPv4" }
 
 Write-Host "[3/5] Checking listening network ports"
 $OpenPorts = Get-NetTCPConnection -State Listen
@@ -43,7 +43,7 @@ Administrators
 --------------
 $($Admins | Out-String)
 
-Falied Login Attempts
+Failed Login Attempts
 ---------------------
 $($FailedLogons | Out-String)
 
