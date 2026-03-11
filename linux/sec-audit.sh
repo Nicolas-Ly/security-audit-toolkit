@@ -1,6 +1,11 @@
 #!/bin/bash
 
-REPORT="../reports/linux-report.txt"
+REPORT_DIR="../reports"
+REPORT="$REPORT_DIR/linux-report.txt"
+
+if [ ! -d "$REPORT_DIR" ]; then
+	mkdir -p "$REPORT_DIR"
+fi
 
 WARNING_COUNT=0
 CRITICAL_COUNT=0

@@ -1,4 +1,10 @@
-$Report = "../reports/windows-report.txt"
+$ReportDir = "../reports"
+
+if (!(Test-Path $ReportDir)) {
+	New-Item -ItemType Directory -Path $ReportDir
+} 
+
+$Report = "$ReportDir/windows-report.txt"
 
 Write-Host "Starting Windows Security Audit..."
 Write-Host "The report will be saved to $Report"
