@@ -25,7 +25,11 @@ Write-Host "[4/5] Checking local Administrators"
 $Admins = Get-LocalGroupMember -Group "Administrators"
 
 Write-Host "[5/5] Checking failed login attempts"
-$FailedLogons = Get-WinEvent -FilterHashtable @{LogName = 'Security'; Id=4625} -MaxEvents 20
+try {
+	$FailedLogons = Get-WinEvent -FilterHashtable @{LogName = 'Security'; Id=4625} -MaxEvents 20
+} catch {
+	$FailedLogons = "No failed lgoin attempts"
+}
 
 @"
 ===== WINDOWS SECURITY AUDIT =====
