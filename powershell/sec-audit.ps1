@@ -26,7 +26,7 @@ $Admins = Get-LocalGroupMember -Group "Administrators"
 
 Write-Host "[5/5] Checking failed login attempts"
 try {
-	$FailedLogons = Get-WinEvent -FilterHashtable @{LogName = 'Security'; Id=4625} -MaxEvents 20
+	$FailedLogons = Get-WinEvent -FilterHashtable @{LogName = 'Security'; Id=4625} -MaxEvents 20 -ErrorAction Stop
 } catch {
 	$FailedLogons = "No failed lgoin attempts"
 }
