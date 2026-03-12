@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 REPORT_DIR="../reports"
@@ -7,8 +8,7 @@ if [ ! -d "$REPORT_DIR" ]; then
 	mkdir -p "$REPORT_DIR"
 fi
 
-WARNING_COUNT=0
-CRITICAL_COUNT=0
+RISK_SCORE=0
 
 echo "Running the security audit..."
 echo "Report saving to $REPORT"
@@ -41,20 +41,29 @@ FAILED_SSH=$(journalctl -u ssh 2>/dev/null | grep "Failed password")
 FAILED_SSH_COUNT=$(journalctl -u ssh 2>/dev/null | grep "Failed password" | wc -l)
 
 if [ "$PRIV_USERS_COUNT" -gt 1 ]; then
-	CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+	RISK_SCORE=$((RISK_SCORE + 3))
 fi
 
 if [ "$WW_COUNT" -gt 0 ]; then
-	WARNING_COUNT=$((WARNING_COUNT + 1))
+	RISK_SCORE=$((RISK_SCORE + 3))
 fi
 
-if [ "$SUID_COUNT" -gt 0 ]; then
-	WARNING_COUNT=$((WARNING_COUNT + 1))
+if [ "$SUID_COUNT" -gt 20 ]; then
+	RISK_SCORE=$((RISK_SCORE + 2))
 fi
 
-if [ "$FAILED_SSH_COUNT" -gt 0 ]; then
-	WARNING_COUNT=$((WARNING_COUNT + 1))
+if [ "$FAILED_SSH_COUNT" -gt 10 ]; then
+	RISK_SCORE=$((RISK_SCORE + 2))
 fi
+
+if [ "$RISK_SCORE"  -le 2 ]; then
+	RISK_LEVEL="***LOW***"
+elif [ "$RISK_SCORE" -le 5 ]; then
+	RISK_LEVEL="***MEDIUM***"
+else
+	RISK_LEVEL="***HIGH***"
+fi
+
 
 
 {
@@ -120,8 +129,8 @@ fi
 echo ""
 echo "Risk Summary"
 echo "------------"
-echo "Warning: $WARNING_COUNT"
-echo "Critical $CRITICAL_COUNT"
+echo "Risk Score: $RISK_SCORE"
+echo "Risk Level: $RISK_LEVEL"
 
 } > "$REPORT"
 
