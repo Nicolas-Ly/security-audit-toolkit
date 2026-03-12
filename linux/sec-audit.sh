@@ -36,15 +36,15 @@ WW_COUNT=$(find / -xdev -type f -perm -0002 2>/dev/null | wc -l)
 
 echo "[5/9] Scanning for world-writable directories..."
 WORLD_WRITABLE_DIR=$(find / -xdev -type d -perm -0002 2>/dev/null | head -n 50)
-WW_DIR_COUNT=$(find / -xdev -type d -perm 0002 2>/dev/null | wc -l)
+WW_DIR_COUNT=$(find / -xdev -type d -perm -0002 2>/dev/null | wc -l)
 
 echo "[6/9] Scanning for permission 0777 files..."
 PERM_777_FILES=$(find / -xdev -type f -perm 0777 2>/dev/null | head -n 50)
 PERM_777_COUNT=$(find / -xdev -type f -perm 0777 2>/dev/null | wc -l)
 
 echo "[7/9] Scanning for weak file permissions..."
-ETC_WEAK_FILES=$(find /etc -type f -perm 0002 2>/dev/null | head -n 50)
-ETC_WEAK_COUNT=$(find /etc -type f -perm 0002 2>/dev/null | wc -l)
+ETC_WEAK_FILES=$(find /etc -type f -perm -0002 2>/dev/null | head -n 50)
+ETC_WEAK_COUNT=$(find /etc -type f -perm -0002 2>/dev/null | wc -l)
 
 #----
 
@@ -102,73 +102,73 @@ echo "==== SECURITY AUDIT ===="
 echo "Generated: $(date '+%Y-%m-%d %H:%M:%S')"
 
 echo ""
-echo "System Information"
-echo "------------------"
+echo "   System Information"
+echo "------------------------"
 echo "Hostname: $HOSTNAME"
 echo "User: $USER_NAME"
 echo "Kernel Version: $KERNEL_VERSION"
 echo "Operating System: $OS_INFO"
 
 echo ""
-echo "IP Addresses"
-echo "------------"
+echo "   IP Addresses"
+echo "------------------"
 echo "$IP_INFO"
 
 echo ""
-echo "Open Network Ports"
-echo "------------------"
+echo "   Open Network Ports"
+echo "------------------------"
 echo "$OPEN_PORTS"
 
 echo ""
-echo "Privileged Users"
-echo "----------------"
+echo "   Privileged Users"
+echo "----------------------"
 echo "Privileged Users Found: $PRIV_USERS_COUNT"
 echo "$PRIV_USERS"
 
 
 echo ""
-echo "World Writable Files"
-echo "--------------------"
+echo "   World Writable Files"
+echo "--------------------------"
 if [ "$WW_COUNT" -eq 0 ]; then
 	echo "No world-writable files found"
 else
-	echo "Total Found:$WW_COUNT"
+	echo "Total Found: $WW_COUNT"
 	echo "$WORLD_WRITABLES"
 fi
 
 echo ""
-echo "World Writable Directories"
-echo "--------------------"
+echo "   World Writable Directories"
+echo "--------------------------------"
 if [ "$WW_DIR_COUNT" -eq 0 ]; then
         echo "No world-writable directories found"
 else
-        echo "Total Found:$WW_DIR_COUNT"
+        echo "Total Found: $WW_DIR_COUNT"
         echo "$WORLD_WRITABLE_DIR"
 fi
 
 echo ""
-echo "Permission 0777 Files"
-echo "--------------------"
+echo "   Permission 0777 Files"
+echo "---------------------------"
 if [ "$PERM_777_COUNT" -eq 0 ]; then
         echo "No 0777 files found"
 else
-        echo "Total Found:$PERM_777_COUNT"
+        echo "Total Found: $PERM_777_COUNT"
         echo "$PERM_777_FILES"
 fi
 
 echo ""
-echo "Weak ETC Files"
+echo "   Weak ETC Files"
 echo "--------------------"
 if [ "$ETC_WEAK_COUNT" -eq 0 ]; then
         echo "No ETC files found"
 else
-        echo "Total Found:$ETC_WEAK_COUNT"
+        echo "Total Found: $ETC_WEAK_COUNT"
         echo "$ETC_WEAK_FILES"
 fi
 
 echo ""
-echo "SUID (Set User ID)  Binaries"
-echo "----------"
+echo "   SUID (Set User ID)  Binaries"
+echo "----------------------------------"
 echo "Total Found: $SUID_COUNT"
 if [ "$SUID_COUNT" -eq 0 ]; then
 	echo "No SUID binaries found"
@@ -179,8 +179,8 @@ else
 fi
 
 echo ""
-echo "Failed SSH Login Attempts"
-echo "-------------------------"
+echo "   Failed SSH Login Attempts"
+echo "-------------------------------"
 echo "Total Found: $FAILED_SSH_COUNT"
 if [ "$FAILED_SSH_COUNT" -eq 0 ]; then
 	echo "No failed SSH login attempts found"
@@ -190,11 +190,14 @@ else
 fi
 
 echo ""
-echo "Risk Summary"
-echo "------------"
+echo "   Risk Summary   "
+echo "------------------"
 echo "Risk Score: $RISK_SCORE"
 echo "Risk Level: $RISK_LEVEL"
 
+echo ""
+echo "   Remediation   "
+echo "-----------------"
 if [ "$PRIV_USERS_COUNT" -gt 1 ]; then
 	echo "- Review accounts with UID 0 and remove any unnecessary privileged users."
 fi
@@ -205,6 +208,22 @@ fi
 
 if [ "$SUID_COUNT" -gt 20 ]; then
 	echo "- Review set user ID binaries and confirm each privileged executable is expected"
+fi
+
+if [ "$WW_DIR_COUNT" -gt 0 ]; then
+	echo "- Review world-writable directories and restrict access where unnecessary."
+fi
+
+if [ "$PERM_777_COUNT" -gt 0 ]; then
+	echo "- Review files with 0777 permissions and apply more restrictive permissions."
+fi
+
+if [ "$ETC_WEAK_COUNT" -gt 0 ]; then
+	echo "- Review weak permissions in /etc because configuration files should not be world-writable."
+fi
+
+if [ "$FAILED_SSH_COUNT" -gt 10 ]; then
+	echo "- Investigate repeated failed SSH login attempts and consider hardening SSH access."
 fi
 
 } > "$REPORT"
