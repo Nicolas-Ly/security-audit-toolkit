@@ -1,6 +1,6 @@
 # Cross-Platform Security Audit Toolkit
 
-This project is a basic cross-platform IT security auditing tool designed to identify common system misconfigurations on both Linux and Windows systems. The toolkit uses Bash for Linux environments and PowerShell for the Windows environments to collect system security information and highlight potential security risks.
+This project is a basic cross-platform IT security auditing tool designed to identify common system misconfigurations on both Linux and Windows systems. The toolkit uses Bash for Linux environments and PowerShell for the Windows environments to collect system security information and highlight potential security risks. It also scores the systems risk level and gives remediation recommendations. 
 
 ---
 
@@ -54,6 +54,9 @@ The audit tool attempts to detect common misconfigurations such as:
 - Exposed network services
 - SUID binaries that may allow privilege escalation
 - World-writable files that could be abused
+- World-writable directories that could be abused
+- Files with 0777 that can be abused
+- Weak /etc files that can be abused
 - Repeated failed authentication attempts
 - Unauthorized administrative access
 
@@ -63,11 +66,8 @@ The audit tool attempts to detect common misconfigurations such as:
 
 Possible future enhancements include:
 
-- Automated risk scoring system
-- Detection of weak file permissions
 - Service misconfiguration checks
 - Integration with security logging tools
-- Automated remediation suggestions
 
 ---
 
